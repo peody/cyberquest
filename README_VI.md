@@ -8,11 +8,19 @@
 
 ## Quan trọng trước khi triển khai
 QR đi kèm được tạo cho tên repository **`cyberquest`** và URL:
-`https://peody.github.io/cyberquest/participant/?qr=1&sessionCode=CQ2026-01`
+`https://cyberquest-kappa-lilac.vercel.app/participant/?qr=1&sessionCode=CQ2026-01`
 
 Để dùng QR có sẵn mà không phải tạo lại, hãy tạo repository GitHub tên `cyberquest` trong tài khoản `peody`. Nếu dùng tên repo khác hoặc tài khoản khác, cần tạo lại QR theo URL GitHub Pages mới và cập nhật ảnh trong `assets/QR_CQ2026-01.png`.
 
-## Đưa lên GitHub Pages
+## Đưa lên Vercel
+1. Giải nén ZIP.
+2. Đưa toàn bộ nội dung vào repository GitHub đang được kết nối với Vercel (upload các file bên trong ZIP, không upload nguyên file ZIP).
+3. Commit changes và chờ Vercel deploy lại.
+4. Mở trang điều khiển `https://cyberquest-kappa-lilac.vercel.app/`.
+5. Quét QR PNG trong `assets/QR_CQ2026-01.png` hoặc QR hiển thị trên trang điều khiển.
+6. QR phải mở URL người tham gia trên tên miền Vercel với `sessionCode=CQ2026-01`.
+
+## Đưa lên GitHub Pages (nếu cần)
 1. Tải ZIP và giải nén.
 2. Tạo repo `cyberquest` trên GitHub.
 3. Upload toàn bộ **nội dung bên trong thư mục ZIP** lên thư mục gốc repo (không upload một thư mục bọc bên ngoài).
