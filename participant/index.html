@@ -3,49 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Thi Trực tuyến - Cơ sở An toàn Thông tin</title>
+    <title>Cổng thi trực tuyến | Cơ sở An toàn Thông tin</title>
     <style>
         /* --- CSS TỔNG THỂ --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0d1117; color: #c9d1d9; }
+        html { min-height: 100%; background:#f3f6fb; }
+        body { width:100%; min-height:100vh; overflow-x:hidden; overflow-y:auto; background:#f3f6fb; color:#1f2937; }
         
         /* --- GIAI ĐOẠN 1: TRANG MỒI NHỬ (CHUYÊN NGHIỆP) --- */
         #login-page {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; text-align: center; padding: 20px;
-            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
+            min-height:100vh; text-align:center; padding:clamp(16px,4vw,36px);
+            background:radial-gradient(circle at top, #eef4ff 0%, #f5f7fb 52%, #e9eef7 100%);
         }
-        .logo-box { font-size: 3rem; color: #58a6ff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(88,166,255,0.5); }
-        .title { font-size: 2rem; color: #ffffff; margin-bottom: 5px; font-weight: 600; }
-        .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 1.1rem; }
+        .logo-box { display:grid; place-items:center; width:64px; height:64px; margin:0 auto 14px; border-radius:18px; background:#e3edff; font-size:2.2rem; color:#2458d3; }
+        .title { font-size:clamp(1.55rem,4vw,2.15rem); color:#172b4d; margin-bottom:8px; font-weight:750; }
+        .subtitle { color:#64748b; margin:0 auto 28px; font-size:clamp(.95rem,2.5vw,1.1rem); line-height:1.6; max-width:650px; }
         
         .container {
-            display: flex; gap: 40px; background: #161b22; padding: 40px; border-radius: 12px;
-            border: 1px solid #30363d; box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-            max-width: 800px; width: 100%; justify-content: center; flex-wrap: wrap;
+            display:flex; gap:clamp(22px,4vw,40px); background:#fff; padding:clamp(20px,4vw,36px); border-radius:18px;
+            border:1px solid #dbe3ef; box-shadow:0 18px 48px rgba(15,23,42,.09);
+            max-width:900px; width:100%; margin:0 auto; justify-content:center; flex-wrap:wrap;
         }
 
         /* Phần nhập UID */
-        .input-section { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid #30363d; padding-right: 40px; }
+        .input-section { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; border-right:1px solid #e2e8f0; padding-right:clamp(12px,3vw,32px); }
         .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 8px; color: #8b949e; font-size: 0.9rem; }
+        .input-group label { display: block; margin-bottom: 8px; color:#64748b; font-size:.9rem; }
         .input-group input { 
             width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #30363d; 
-            background: #0d1117; color: white; font-size: 1rem; outline: none; transition: 0.3s;
+            background: #0d1117; color:#172b4d; font-size:1rem; outline: none; transition: 0.3s;
         }
         .input-group input:focus { border-color: #58a6ff; box-shadow: 0 0 5px rgba(88,166,255,0.5); }
         
         .btn {
-            background: #238636; color: white; border: none; padding: 12px 20px; font-size: 1.1rem;
+            background:#2458d3; color:white; border: none; padding: 12px 20px; font-size: 1.1rem;
             border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; width: 100%;
         }
-        .btn:hover { background: #2ea043; }
+        .btn:hover { background:#1745b8; } .btn:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
 
         /* Phần QR Code */
         .qr-section { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .qr-box { background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; width: 180px; height: 180px; }
         .qr-box img { width: 100%; height: 100%; }
-        .qr-text { color: #8b949e; font-size: 0.9rem; }
+        .qr-text { color:#64748b; font-size:.9rem; }
 
         /* Giao diện khi quét QR bằng điện thoại */
         #qr-scanned-page { display: none; text-align: center; }
@@ -84,13 +85,14 @@
 
         /* --- GIAI ĐOẠN 2: TRAP / RANSOMWARE (HIỆU ỨNG MẠNH) --- */
         #ransomware-page {
-            display: none; background-color: #b30000; color: #fff; height: 100vh; width: 100vw;
-            position: absolute; top: 0; left: 0; z-index: 9999; flex-direction: column;
-            justify-content: center; align-items: center; font-family: 'Courier New', Courier, monospace; text-align: center;
+            display:none; background:radial-gradient(circle at center,#a10f18 0%,#65070d 100%); color:#fff;
+            min-height:100vh; width:100%; position:fixed; inset:0; z-index:9999; flex-direction:column;
+            justify-content:center; align-items:center; padding:clamp(16px,4vw,36px); overflow:auto;
+            font-family:'Segoe UI',Tahoma,sans-serif; text-align:center;
         }
         
         /* Hiệu ứng giật màn hình (Shake/Glitch) */
-        .shake-effect { animation: shake 0.1s infinite; }
+        .shake-effect { animation: shake .22s infinite; }
         @keyframes shake {
             0% { transform: translate(2px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -105,13 +107,26 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        .blink-text { animation: blinker 0.5s linear infinite; color: yellow; font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase;}
+        .blink-text { animation:blinker 1s linear infinite; color:#ffd34d; font-size:clamp(1.45rem,4.5vw,3rem); font-weight:800; line-height:1.15; margin:12px 0 22px; text-transform:uppercase; max-width:1100px; }
         @keyframes blinker { 50% { opacity: 0; } }
-        .warning-box { background: rgba(0,0,0,0.8); padding: 30px; border: 3px solid #ffcc00; border-radius: 10px; max-width: 800px; box-shadow: 0 0 30px rgba(0,0,0,1); }
+        .warning-box { background:rgba(20,0,2,.88); padding:clamp(20px,4vw,32px); border:2px solid #ffd34d; border-radius:14px; width:min(100%,820px); box-shadow:0 18px 55px rgba(0,0,0,.38); } 
+        .alert-help { margin-top:20px; font-size:.9rem; color:#ffe6e6; opacity:.9; }
         .skull { font-size: 5rem; margin-bottom: 10px; animation: blinker 1s linear infinite; }
         
-        /* Nút ẩn thoát (Góc dưới bên phải) */
-        #secret-btn { position: absolute; bottom: 0; right: 0; width: 100px; height: 100px; background: transparent; border: none; cursor: crosshair; }
+        @media (prefers-reduced-motion: reduce) {
+            .shake-effect, .blink-text, .skull { animation:none !important; }
+        }
+        @media (max-width:600px) {
+            #login-page { justify-content:flex-start; }
+            .container { flex-direction:column; gap:24px; }
+            .input-section { min-width:0; width:100%; border-right:0; border-bottom:1px solid #e2e8f0; padding:0 0 22px; }
+            .qr-section { min-width:0; width:100%; }
+            #waiting-page { min-height:100vh; height:auto; padding:14px; }
+            #waiting-page .wait-card { padding:20px 16px; }
+            #waiting-page .exam-header { padding:14px; }
+            #waiting-page .status-panel { padding:12px; }
+            #ransomware-page .warning-box p { font-size:1rem !important; }
+        }
 
     </style>
 </head>
@@ -122,15 +137,15 @@
     <!-- GIAI ĐOẠN 1: TRANG MỒI NHỬ -->
     <div id="login-page">
         <div class="logo-box">🛡️</div>
-        <h1 class="title">Cổng Thi Trực Tuyến 2026</h1>
+        <h1 class="title">Cổng thi trực tuyến</h1>
         <p class="subtitle">Học phần: Cơ sở An toàn Thông tin - Kiểm tra Giữa kỳ</p>
         
         <div class="container" id="main-container">
             <!-- Form nhập UID dành cho người truy cập bằng Link -->
             <div class="input-section" id="uid-section">
-                <h3 style="margin-bottom: 20px; color: white;">Mã tham gia phiên</h3>
+                <h3 style="margin-bottom: 20px; color: white;">Thông tin dự thi</h3>
                 <div class="input-group">
-                    <label for="uid">Nhập mã tham gia (không dùng mật khẩu):</label>
+                    <label for="uid">Nhập mã dự thi:</label>
                     <input type="text" id="uid" placeholder="VD: B22DCCN..." autocomplete="off">
                 </div>
                 <button class="btn" onclick="checkUIDAndTrigger()">VÀO PHÒNG THI</button>
@@ -141,9 +156,9 @@
                 <h3 style="margin-bottom: 20px; color: white;">Truy cập nhanh</h3>
                 <div class="qr-box">
                     <!-- Mã QR này sẽ được thay thế bằng mã QR thực tế sinh ra ở Bước 3 -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://github.com" alt="QR Code">
+                    <img src="../assets/QR_CQ2026-01.png" alt="Mã QR vào phòng thi">
                 </div>
-                <p class="qr-text">Quét mã QR bằng điện thoại để vào thẳng phòng thi không cần nhập UID.</p>
+                <p class="qr-text">Quét mã QR bằng điện thoại để truy cập cổng thi.</p>
             </div>
 
             <!-- Giao diện hiển thị trên ĐIỆN THOẠI SAU KHI QUÉT QR -->
@@ -151,7 +166,7 @@
                 <div class="success-icon">✔️</div>
                 <h2 style="color: white; margin-bottom: 10px;">Xác thực QR Thành công!</h2>
                 <p style="color: #8b949e; margin-bottom: 30px;">Hệ thống đã nhận diện thiết bị của bạn.</p>
-                <button class="btn" style="padding: 15px 30px; font-size: 1.2rem;" onclick="showWaitingScreen()">VÀO PHÒNG THI DIỄN TẬP</button>
+                <button class="btn" style="padding: 15px 30px; font-size: 1.2rem;" onclick="showWaitingScreen()">TIẾP TỤC VÀO PHÒNG THI</button>
             </div>
         </div>
     </div>
@@ -166,7 +181,7 @@
             </div>
         </header>
         <main class="wait-card">
-            <div class="exam-chip">● PHIÊN DIỄN TẬP CÓ ĐỒNG THUẬN</div>
+            <div class="exam-chip">● CỔNG THI TRỰC TUYẾN</div>
             <h1 style="color:#172b4d;font-size:1.65rem;margin-bottom:10px">Phòng thi đã sẵn sàng</h1>
             <p style="color:#64748b;line-height:1.7">
                 Vui lòng giữ trang này mở trong thời gian người hướng dẫn chuẩn bị bắt đầu.
@@ -186,18 +201,17 @@
                 <span class="status-dot" aria-hidden="true"></span>
                 <div>
                     <strong style="display:block;color:#172b4d;margin-bottom:5px">Trạng thái kết nối</strong>
-                    <p id="connection-status">Chưa kết nối. Hãy đọc thông báo diễn tập rồi bấm xác nhận nếu đồng ý tham gia.</p>
+                    <p id="connection-status">Chưa kết nối. Xác nhận tham gia để đồng bộ trạng thái phòng thi.</p>
                 </div>
             </div>
             <button class="btn" id="join-demo-btn" onclick="joinDemo()">
-                XÁC NHẬN THAM GIA PHIÊN DIỄN TẬP
+                XÁC NHẬN VÀO PHÒNG THI
             </button>
             <button class="btn" style="margin-top:10px;background:#475569"
-                    onclick="leaveDemo()">RỜI PHIÊN</button>
+                    onclick="leaveDemo()">RỜI PHÒNG THI</button>
             <p class="disclosure">
-                <strong>Lưu ý:</strong> Đây là giao diện phục vụ diễn tập nhận thức an toàn thông tin. Chỉ bấm xác nhận khi bạn biết đây là buổi diễn tập.
-                Không có dữ liệu nào bị mã hóa hoặc thu thập. Màn hình cảnh báo (nếu được trình diễn)
-                chỉ là hiệu ứng mô phỏng.
+                <strong>Thông tin:</strong> Đây là môi trường thực hành an toàn thông tin có điều phối. Không nhập mật khẩu hoặc thông tin cá nhân nhạy cảm.
+                Nếu xuất hiện cảnh báo bất thường, hãy làm theo hướng dẫn của cán bộ phụ trách.
             </p>
         </main>
     </div>
@@ -205,20 +219,19 @@
     <!-- Màn hình mô phỏng an toàn -->
     <div id="ransomware-page" role="status" aria-live="polite">
         <div class="skull">🛡️</div>
-        <div class="blink-text">MÔ PHỎNG CẢNH BÁO AN TOÀN THÔNG TIN</div>
+        <div class="blink-text">CẢNH BÁO AN TOÀN HỆ THỐNG</div>
         <div class="warning-box">
             <p style="font-size: 1.5rem; margin-bottom: 15px; color: #ffcc00; font-weight: bold;">
-                Đây là tình huống diễn tập — thiết bị không bị xâm nhập
+                Phát hiện hoạt động bất thường trên thiết bị
             </p>
             <p style="font-size: 1.1rem; line-height: 1.6;">
-                Không có dữ liệu nào bị mã hóa, thu thập hoặc gửi đi.
-                Hãy quan sát dấu hiệu cảnh báo và làm theo hướng dẫn của người trình bày.
+                Hãy tạm dừng thao tác và làm theo quy trình ứng phó sự cố của đơn vị.
+                Không nhập thông tin xác thực hoặc thực hiện giao dịch trong khi cảnh báo đang hiển thị.
             </p>
             <p style="margin-top: 20px; font-size: 1rem; color:#9effb2;">
-                TRẠNG THÁI: <span id="progress">ĐANG MÔ PHỎNG</span>
+                TRẠNG THÁI: <span id="progress">CẦN KIỂM TRA</span>
             </p>
-            <button class="btn" id="exit-demo-btn" style="margin-top:24px;background:#30363d"
-                    onclick="stopMalware()">KẾT THÚC MÔ PHỎNG / THOÁT TOÀN MÀN HÌNH</button>
+            <p class="alert-help">Để bảo đảm an toàn, nhấn phím Esc để rời màn hình cảnh báo.</p>
         </div>
     </div>
 
@@ -247,18 +260,31 @@
                 if (audioContext && audioContext.state === "suspended") audioContext.resume();
             } catch (e) { console.warn("Audio chưa khả dụng:", e); }
         }
+        let alertToneTimer = null;
         function playDemoAlertTone() {
-            if (!audioContext || audioContext.state !== "running") return;
-            try {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.type = "sine"; osc.frequency.setValueAtTime(880, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.03);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.45);
-                osc.connect(gain); gain.connect(audioContext.destination);
-                osc.start(); osc.stop(audioContext.currentTime + 0.46);
-            } catch (e) { console.warn("Không phát được âm báo:", e); }
+            if (!audioContext || audioContext.state !== "running" || alertToneTimer) return;
+            const beep = () => {
+                if (!audioContext || audioContext.state !== "running") return;
+                try {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = "sawtooth";
+                    osc.frequency.setValueAtTime(740, audioContext.currentTime);
+                    osc.frequency.setValueAtTime(920, audioContext.currentTime + 0.18);
+                    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.055, audioContext.currentTime + 0.025);
+                    gain.gain.setValueAtTime(0.055, audioContext.currentTime + 0.22);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.42);
+                    osc.connect(gain); gain.connect(audioContext.destination);
+                    osc.start(); osc.stop(audioContext.currentTime + 0.43);
+                } catch (e) { console.warn("Không phát được âm báo:", e); }
+            };
+            beep();
+            alertToneTimer = window.setInterval(beep, 850);
+        }
+        function stopAlertTone() {
+            if (alertToneTimer) window.clearInterval(alertToneTimer);
+            alertToneTimer = null;
         }
 
         document.getElementById("session-code").textContent = sessionCode;
@@ -346,11 +372,14 @@
             document.getElementById("waiting-page").style.display = "none";
             const page = document.getElementById("ransomware-page");
             page.style.display = "flex";
-            page.classList.remove("shake-effect");
-            document.getElementById("progress").textContent = "CẢNH BÁO GIẢ LẬP";
+            page.classList.add("shake-effect");
+            document.getElementById("progress").textContent = "CẦN KIỂM TRA";
+            playDemoAlertTone();
         }
 
         function stopMalware() {
+            stopAlertTone();
+            document.getElementById("ransomware-page").classList.remove("shake-effect");
             document.getElementById("ransomware-page").style.display = "none";
             document.getElementById("waiting-page").style.display = "none";
             document.getElementById("login-page").style.display = "flex";
@@ -366,6 +395,12 @@
         function leaveDemo() {
             stopMalware();
         }
+        // Emergency accessibility exit: no visible dismissal button on the alert screen.
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && document.getElementById("ransomware-page").style.display === "flex") {
+                stopMalware();
+            }
+        });
     </script>
 </body>
 </html>
