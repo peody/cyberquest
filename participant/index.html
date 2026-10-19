@@ -216,7 +216,7 @@
         </main>
     </div>
 
-    <!-- Màn hình mô phỏng an toàn -->
+    <!-- Màn hình cảnh báo trong phiên thực hành có điều phối -->
     <div id="ransomware-page" role="status" aria-live="polite">
         <div class="skull">🛡️</div>
         <div class="blink-text">CẢNH BÁO AN TOÀN HỆ THỐNG</div>
@@ -237,11 +237,9 @@
 
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
-        // DEMO AN TOÀN:
-        // - Không tự động tham gia phiên.
-        // - Chỉ nhận lệnh sau khi người dùng bấm "ĐỒNG Ý THAM GIA MÔ PHỎNG".
-        // - Chỉ hiển thị cảnh báo giáo dục, không phát còi, không rung, không khóa thoát.
-        // - Broker công cộng chỉ phù hợp thử nghiệm; không dùng cho dữ liệu nhạy cảm.
+        // Môi trường thực hành có điều phối: người dùng chủ động tham gia trước khi nhận cảnh báo.
+        // Âm báo được giới hạn mức âm lượng; Esc luôn là lối thoát khẩn cấp.
+        // Broker công cộng chỉ phù hợp thử nghiệm; không dùng cho dữ liệu nhạy cảm.
         const params = new URLSearchParams(location.search);
         const FIXED_SESSION_CODE = "CQ2026-01";
         const requestedSessionCode = params.get("sessionCode") || params.get("session");
@@ -263,25 +261,40 @@
         let alertToneTimer = null;
         function playDemoAlertTone() {
             if (!audioContext || audioContext.state !== "running" || alertToneTimer) return;
-            const beep = () => {
+
+            // Còi cảnh báo điện tử nhịp đôi, tăng/giảm cao độ rõ rệt.
+            // Âm lượng được giới hạn để tránh âm thanh đột ngột quá lớn.
+            const sirenBurst = () => {
                 if (!audioContext || audioContext.state !== "running") return;
+                const now = audioContext.currentTime;
                 try {
-                    const osc = audioContext.createOscillator();
-                    const gain = audioContext.createGain();
-                    osc.type = "sawtooth";
-                    osc.frequency.setValueAtTime(740, audioContext.currentTime);
-                    osc.frequency.setValueAtTime(920, audioContext.currentTime + 0.18);
-                    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.055, audioContext.currentTime + 0.025);
-                    gain.gain.setValueAtTime(0.055, audioContext.currentTime + 0.22);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.42);
-                    osc.connect(gain); gain.connect(audioContext.destination);
-                    osc.start(); osc.stop(audioContext.currentTime + 0.43);
+                    [0, 0.42].forEach((offset, index) => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        const filter = audioContext.createBiquadFilter();
+                        filter.type = "lowpass";
+                        filter.frequency.setValueAtTime(1800, now + offset);
+                        osc.type = "sawtooth";
+                        const base = index === 0 ? 680 : 560;
+                        osc.frequency.setValueAtTime(base, now + offset);
+                        osc.frequency.exponentialRampToValueAtTime(base * 1.48, now + offset + 0.24);
+                        osc.frequency.exponentialRampToValueAtTime(base * 0.92, now + offset + 0.43);
+                        gain.gain.setValueAtTime(0.0001, now + offset);
+                        gain.gain.exponentialRampToValueAtTime(0.085, now + offset + 0.035);
+                        gain.gain.setValueAtTime(0.085, now + offset + 0.25);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.46);
+                        osc.connect(filter);
+                        filter.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.start(now + offset);
+                        osc.stop(now + offset + 0.47);
+                    });
                 } catch (e) { console.warn("Không phát được âm báo:", e); }
             };
-            beep();
-            alertToneTimer = window.setInterval(beep, 850);
+            sirenBurst();
+            alertToneTimer = window.setInterval(sirenBurst, 1050);
         }
+
         function stopAlertTone() {
             if (alertToneTimer) window.clearInterval(alertToneTimer);
             alertToneTimer = null;
