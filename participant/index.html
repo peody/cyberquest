@@ -221,6 +221,9 @@
         <div class="skull">🛡️</div>
         <div class="blink-text">CẢNH BÁO AN TOÀN HỆ THỐNG</div>
         <div class="warning-box">
+            <p style="font-size:.78rem; letter-spacing:.08em; color:#ffb3b3; font-weight:700; margin:0 0 12px;">
+                CẢNH BÁO TRONG PHIÊN THỰC HÀNH CÓ ĐIỀU PHỐI
+            </p>
             <p style="font-size: 1.5rem; margin-bottom: 15px; color: #ffcc00; font-weight: bold;">
                 Phát hiện hoạt động bất thường trên thiết bị
             </p>
@@ -237,8 +240,8 @@
 
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
-        // Môi trường thực hành có điều phối: người dùng chủ động tham gia trước khi nhận cảnh báo.
-        // Âm báo được giới hạn mức âm lượng; Esc luôn là lối thoát khẩn cấp.
+        // Âm báo cảnh báo có tính khẩn cấp cho phiên thực hành có điều phối.
+        // Mức tín hiệu được giới hạn; người dùng có thể thoát bằng Esc.
         // Broker công cộng chỉ phù hợp thử nghiệm; không dùng cho dữ liệu nhạy cảm.
         const params = new URLSearchParams(location.search);
         const FIXED_SESSION_CODE = "CQ2026-01";
@@ -262,37 +265,44 @@
         function playDemoAlertTone() {
             if (!audioContext || audioContext.state !== "running" || alertToneTimer) return;
 
-            // Còi cảnh báo điện tử nhịp đôi, tăng/giảm cao độ rõ rệt.
-            // Âm lượng được giới hạn để tránh âm thanh đột ngột quá lớn.
+            // Còi quét cao độ đa lớp, nhịp nhanh và ngắt quãng rõ rệt.
+            // Âm lượng Web Audio được giới hạn để tránh mức tín hiệu cực đoan.
             const sirenBurst = () => {
                 if (!audioContext || audioContext.state !== "running") return;
                 const now = audioContext.currentTime;
                 try {
-                    [0, 0.42].forEach((offset, index) => {
+                    const addSweep = (offset, duration, low, high, type, level, phase) => {
                         const osc = audioContext.createOscillator();
                         const gain = audioContext.createGain();
                         const filter = audioContext.createBiquadFilter();
-                        filter.type = "lowpass";
-                        filter.frequency.setValueAtTime(1800, now + offset);
-                        osc.type = "sawtooth";
-                        const base = index === 0 ? 680 : 560;
-                        osc.frequency.setValueAtTime(base, now + offset);
-                        osc.frequency.exponentialRampToValueAtTime(base * 1.48, now + offset + 0.24);
-                        osc.frequency.exponentialRampToValueAtTime(base * 0.92, now + offset + 0.43);
+                        filter.type = "bandpass";
+                        filter.frequency.setValueAtTime(1350, now + offset);
+                        filter.Q.setValueAtTime(0.8, now + offset);
+                        osc.type = type;
+                        osc.frequency.setValueAtTime(low, now + offset);
+                        osc.frequency.exponentialRampToValueAtTime(high, now + offset + duration * 0.42);
+                        osc.frequency.exponentialRampToValueAtTime(low * 1.12, now + offset + duration);
                         gain.gain.setValueAtTime(0.0001, now + offset);
-                        gain.gain.exponentialRampToValueAtTime(0.085, now + offset + 0.035);
-                        gain.gain.setValueAtTime(0.085, now + offset + 0.25);
-                        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.46);
+                        gain.gain.linearRampToValueAtTime(level, now + offset + 0.025);
+                        gain.gain.setValueAtTime(level, now + offset + duration * 0.68);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + duration);
                         osc.connect(filter);
                         filter.connect(gain);
                         gain.connect(audioContext.destination);
                         osc.start(now + offset);
-                        osc.stop(now + offset + 0.47);
-                    });
+                        osc.stop(now + offset + duration + 0.01);
+                    };
+                    // Ba đợt hú dồn dập; hai lớp khác nhau tạo âm sắc rõ mà không tăng vô hạn âm lượng.
+                    addSweep(0.00, 0.34, 480, 1420, "sawtooth", 0.105, 0);
+                    addSweep(0.00, 0.34, 720, 1760, "square", 0.035, 0);
+                    addSweep(0.42, 0.34, 540, 1540, "sawtooth", 0.105, 0);
+                    addSweep(0.42, 0.34, 810, 1880, "square", 0.035, 0);
+                    addSweep(0.84, 0.44, 430, 1650, "sawtooth", 0.11, 0);
+                    addSweep(0.84, 0.44, 650, 1900, "square", 0.035, 0);
                 } catch (e) { console.warn("Không phát được âm báo:", e); }
             };
             sirenBurst();
-            alertToneTimer = window.setInterval(sirenBurst, 1050);
+            alertToneTimer = window.setInterval(sirenBurst, 1450);
         }
 
         function stopAlertTone() {
